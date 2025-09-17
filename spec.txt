@@ -1,0 +1,89 @@
+App Overview
+
+The app has a main page with a 2x2 grid of 4 icons.
+Each icon navigates to one of the 4 different game pages.
+Each game is a single-page game with its own UI and logic.
+
+Game 1: Number Memory
+UI Elements:
+Input box at the top: user enters the number of digits to generate (default = 10).
+Button: "Generate Number" → displays a random number.
+Button: "Start" → hides the number and shows an input field for the user to type it in.
+Game Logic:
+User must re-enter the exact number.
+If correct → show feedback "Correct" in green.
+If incorrect → show feedback "Wrong" in red.
+
+Game 2: Grid Memory
+UI Elements:
+Input box for n (grid size, default = 5).
+Input box for k (number of pressed cells, default = 10).
+Slider for speed of cell highlighting.
+Game Logic:
+On start, an n x n grid is displayed.
+k cells are highlighted and turned back to the original state one by one in sequence.
+User must memorize the sequence and touch cells on the grid in the same sequence.
+If the touched cell corresponds with the sequence, highlight the cell with a green outline; if incorrect, use a red outline and end the game.
+
+Game 3: Shape Sequence
+UI Elements:
+Button: "Generate Shapes" → generates a sequence of shapes.
+Controls at the top:
+Input for number of shapes in sequence (default = 10).
+Slider for exposure time per shape.
+Game Logic:
+Shapes come from the set: {Circle, Square, Triangle, Star, Clover, Diamond, Spade, Heart}.
+Colors: {Red, Orange, Yellow, Green, Blue, Violet}.
+A sequence of shapes with colors is shown one by one.
+After sequence ends, 4 multiple-choice options are presented:
+One option is the correct sequence.
+Other options are variations with only 1 element different.
+User must choose the correct sequence.
+
+Game 4: Task Sequence Memory
+UI Elements:
+Input box at the top for number of tasks to generate.
+Button: "Generate Tasks" → generates non-identical random tasks, showing lines of:
+[Place] + [Item] + [Action]
+Button: "Start" → hides tasks and begins the quiz.
+Game Logic:
+User must recall all tasks in the correct order.
+Task is created with random number of items in a fixed set of place+action
+4 multiple-choice options are presented for each task.
+One option is the correct task at the current step.
+Other options are from another task at another step.
+[Place] + [Action] has following variations in Korean:
+빵집에서 바게트 x 개 사기
+빵집에서 피자빵 x 개 사기
+빵집에서 토스트 x 개 사기
+빵집에서 케이크 x 개 사기
+도서관에서 책 x권 반납하기
+도서관에서 책 x권 대출하기
+까페에서 말차라떼 x잔 사기
+까페에서 아이스 아메리카노 x잔 사기
+까페에서 아메리카노 x잔 사기
+까페에서 요거트 x잔 사기
+까페에서 밀크티 x잔 사기
+까페에서 홍차 x잔 사기
+약국에서 파스 x개 사기
+약국에서 감기약 x개 사기
+약국에서 소화제 x개 사기
+약국에서 진통제 x개 사기
+과일가게에서 사과 x개 사기
+과일가게에서 배 x개 사기
+과일가게에서 딸기 x개 사기
+과일가게에서 수박 x개 사기
+과일가게에서 바나나 x개 사기
+슈퍼에서 사과 x개 사기
+슈퍼에서 배 x개 사기
+슈퍼에서 딸기 x개 사기
+슈퍼에서 수박 x개 사기
+슈퍼에서 바나나 x개 사기
+슈퍼에서 계란 x개 사기
+슈퍼에서 우유 x개 사기
+슈퍼에서 음료수 x개 사기
+슈퍼에서 과자 x개 사기
+편의점에서 음료수 x개 사기
+편의점에서 소화제 x개 사기
+편의점에서 진통제 x개 사기
+편의점에서 과자 x개 사기
