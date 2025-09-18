@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-  Alert,
   ScrollView,
 } from 'react-native';
 
@@ -19,25 +18,29 @@ interface Task {
 }
 
 const TASK_TEMPLATES = [
-  {place: '빵집에서', items: ['바게트', '피자빵', '토스트', '케이크'], action: '사기'},
+  {place: '빵집에서', items: ['식빵', '바게트', '베이글', '피자빵', '토스트', '케이크', '크루아상', '소보로빵', '단팥빵', '슈크림빵', '초코빵', '피자빵', '소시지빵', '카레빵', '머핀', '브라우니', '타르트'], action: '사기'},
   {place: '도서관에서', items: ['책'], action: '반납하기'},
   {place: '도서관에서', items: ['책'], action: '대출하기'},
-  {place: '까페에서', items: ['말차라떼', '아이스 아메리카노', '아메리카노', '요거트', '밀크티', '홍차'], action: '사기'},
-  {place: '약국에서', items: ['파스', '감기약', '소화제', '진통제'], action: '사기'},
-  {place: '과일가게에서', items: ['사과', '배', '딸기', '수박', '바나나'], action: '사기'},
-  {place: '슈퍼에서', items: ['사과', '배', '딸기', '수박', '바나나', '계란', '우유', '음료수', '과자'], action: '사기'},
-  {place: '편의점에서', items: ['음료수', '소화제', '진통제', '과자'], action: '사기'},
+  {place: '까페에서', items: ['말차라떼', '아이스 아메리카노', '아메리카노', '요거트', '밀크티', '홍차','에스프레소','카페라떼','카푸치노','바닐라라떼','카라멜 마끼아또','콜드브루','아인슈페너','모카','그린티라떼','고구마라떼','아이스티','레몬에이드','과일에이드', '과일주스','스무디', '케이크','티라미수','마카롱','쿠키','머핀','스콘','크루아상','샌드위치','베이글'], action: '사기'},
+  {place: '약국에서', items: ['파스', '감기약', '소화제', '진통제','해열제','제산제','연고','지사제','변비약','비타민','밴드','거즈','붕대','알코올','인공눈물'], action: '사기'},
+  {place: '과일가게에서', items: ['사과','배','감','귤','오렌지','레몬','포도','복숭아','자두','체리','딸기','블루베리','참외','수박','멜론','파인애플','바나나','망고','키위'], action: '사기'},
+  {place: '슈퍼에서', items: ['사과','배','감','귤','오렌지','레몬','포도','복숭아','자두','체리','딸기','블루베리','참외','수박','멜론','파인애플','바나나','망고','키위', '달걀', '우유', '사이다','콜라','과자','라면','아이스크림','쌀','김치','생수','소주','맥주','통조림 참치','소고기','돼지고기','닭고기','샴푸','치약','휴지','주방세제','세탁세제'], action: '사기'},
+  {place: '편의점에서', items: ['담배','사이다','콜라','소화제','진통제','과자','우유','라면','아이스크림','김치','생수','소주','맥주','샴푸','치약','휴지','주방세제','세탁세제'], action: '사기'},
+  {place: '세탁소에서', items: ['와이셔츠','남성정장','블라우스','원피스','코트','스커트','정장바지','자켓','트렌치코트','패딩','조끼','셔츠'], action: '맡기기'},
+  {place: '세탁소에서', items: ['와이셔츠','남성정장','블라우스','원피스','코트','스커트','정장바지','자켓','트렌치코트','패딩','조끼','셔츠'], action: '찾아오기'},
+  {place: '우체국에서', items: ['편지','소포'], action: '부치기'},
 ];
 
 const TaskSequenceScreen = () => {
   const [numTasks, setNumTasks] = useState('5');
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [gamePhase, setGamePhase] = useState<'setup' | 'showing' | 'quiz'>('setup');
+  const [gamePhase, setGamePhase] = useState<'setup' | 'quiz'>('setup');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [options, setOptions] = useState<Task[]>([]);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<number[]>([]);
+  const [feedbackType, setFeedbackType] = useState<'correct' | 'wrong' | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isCongratsVisible, setIsCongratsVisible] = useState(false);
 
   const generateTask = (usedTasks: Set<string>): Task => {
     let attempts = 0;
@@ -81,8 +84,22 @@ const TaskSequenceScreen = () => {
     if (action === '반납하기' || action === '대출하기') {
       return '권';
     }
-    if (item.includes('라떼') || item.includes('아메리카노') || item.includes('요거트') || item.includes('밀크티') || item.includes('홍차')) {
+    if ([
+      '말차라떼','아이스 아메리카노','아메리카노','요거트','밀크티','홍차','에스프레소','카페라떼','카푸치노','바닐라라떼','카라멜 마끼아또','콜드브루','아인슈페너','모카','그린티라떼','고구마라떼','아이스티','레몬에이드','과일에이드','과일주스','스무디'
+    ].includes(item)) {
       return '잔';
+    }
+    if (['알코올','인공눈물','생수','수박','샴푸','김치','편지'].includes(item)) {
+      return '통';
+    }
+    if (['소주','맥주','사이다','콜라'].includes(item)) {
+      return '병';
+    }
+    if (['과자','라면'].includes(item)) {
+      return '봉지';
+    }
+    if (['소고기','돼지고기','닭고기','우유','쌀'].includes(item)) {
+      return '팩';
     }
     return '개';
   };
@@ -100,20 +117,13 @@ const TaskSequenceScreen = () => {
     setTasks(newTasks);
     setCurrentQuestionIndex(0);
     setSelectedOption(null);
-    setCorrectAnswers(0);
-    setUserAnswers([]);
+    setFeedbackType(null);
+    setIsProcessing(false);
   };
 
   const startGame = () => {
-    if (tasks.length === 0) {
-      Alert.alert('Error', 'Please generate tasks first');
-      return;
-    }
-    
-    setGamePhase('showing');
-  };
-
-  const startQuiz = () => {
+    setFeedbackType(null);
+    setIsProcessing(false);
     setGamePhase('quiz');
     generateQuestionOptions(0);
   };
@@ -152,38 +162,49 @@ const TaskSequenceScreen = () => {
   };
 
   const handleOptionSelect = (optionIndex: number) => {
+    if (isProcessing) return;
     setSelectedOption(optionIndex);
+
+    const correctTask = tasks[currentQuestionIndex];
+    const chosen = options[optionIndex];
+    const isCorrect = chosen.fullText === correctTask.fullText;
+
+    setIsProcessing(true);
+    if (isCorrect) {
+      setFeedbackType('correct');
+      setTimeout(() => {
+        const nextIndex = currentQuestionIndex + 1;
+        if (nextIndex >= tasks.length) {
+          showCongratsThenReset();
+        } else {
+          setCurrentQuestionIndex(nextIndex);
+          generateQuestionOptions(nextIndex);
+          setSelectedOption(null);
+          setFeedbackType(null);
+          setIsProcessing(false);
+        }
+      }, 600);
+    } else {
+      setFeedbackType('wrong');
+      setTimeout(() => {
+        setFeedbackType(null);
+        setSelectedOption(null);
+        setIsProcessing(false);
+      }, 600);
+    }
   };
 
-  const submitAnswer = () => {
-    if (selectedOption === null) {
-      Alert.alert('Error', 'Please select an option');
-      return;
-    }
-    
-    const selectedTask = options[selectedOption];
-    const correctTask = tasks[currentQuestionIndex];
-    const isCorrect = selectedTask.fullText === correctTask.fullText;
-    
-    const newUserAnswers = [...userAnswers, selectedOption];
-    setUserAnswers(newUserAnswers);
-    
-    if (isCorrect) {
-      setCorrectAnswers(prev => prev + 1);
-    }
-    
-    if (currentQuestionIndex + 1 < tasks.length) {
-      const nextIndex = currentQuestionIndex + 1;
-      setCurrentQuestionIndex(nextIndex);
-      generateQuestionOptions(nextIndex);
-    } else {
-      const finalScore = correctAnswers + (isCorrect ? 1 : 0);
-      Alert.alert(
-        'Quiz Complete!',
-        `You got ${finalScore} out of ${tasks.length} correct!`,
-        [{text: 'OK', onPress: resetGame}]
-      );
-    }
+  // Shows a short congratulations message before resetting to settings
+  const showCongratsThenReset = () => {
+    setIsProcessing(true);
+    setIsCongratsVisible(true);
+    setTimeout(() => {
+      setIsCongratsVisible(false);
+      setFeedbackType(null);
+      setSelectedOption(null);
+      setIsProcessing(false);
+      resetGame();
+    }, 1000);
   };
 
   const resetGame = () => {
@@ -191,9 +212,9 @@ const TaskSequenceScreen = () => {
     setTasks([]);
     setCurrentQuestionIndex(0);
     setSelectedOption(null);
-    setCorrectAnswers(0);
-    setUserAnswers([]);
     setOptions([]);
+    setFeedbackType(null);
+    setIsProcessing(false);
   };
 
   return (
@@ -202,7 +223,7 @@ const TaskSequenceScreen = () => {
         {gamePhase === 'setup' && (
           <View style={styles.setupContainer}>
             <View style={styles.inputRow}>
-              <Text style={styles.label}>Number of tasks:</Text>
+              <Text style={styles.label}>심부름 목록 개수:</Text>
               <TextInput
                 style={styles.input}
                 value={numTasks}
@@ -213,13 +234,12 @@ const TaskSequenceScreen = () => {
             </View>
             
             <TouchableOpacity style={styles.button} onPress={generateTasks}>
-              <Text style={styles.buttonText}>Generate Tasks</Text>
+              <Text style={styles.buttonText}>목록 생성!</Text>
             </TouchableOpacity>
             
             {tasks.length > 0 && (
               <>
                 <View style={styles.tasksContainer}>
-                  <Text style={styles.tasksTitle}>Generated Tasks:</Text>
                   {tasks.map((task, index) => (
                     <View key={index} style={styles.taskItem}>
                       <Text style={styles.taskNumber}>{index + 1}.</Text>
@@ -229,68 +249,50 @@ const TaskSequenceScreen = () => {
                 </View>
                 
                 <TouchableOpacity style={styles.button} onPress={startGame}>
-                  <Text style={styles.buttonText}>Start</Text>
+                  <Text style={styles.buttonText}>게임 시작!</Text>
                 </TouchableOpacity>
               </>
             )}
           </View>
         )}
         
-        {gamePhase === 'showing' && (
-          <View style={styles.showingContainer}>
-            <Text style={styles.instruction}>Memorize these tasks in order:</Text>
-            <View style={styles.tasksContainer}>
-              {tasks.map((task, index) => (
-                <View key={index} style={styles.taskItem}>
-                  <Text style={styles.taskNumber}>{index + 1}.</Text>
-                  <Text style={styles.taskText}>{task.fullText}</Text>
-                </View>
-              ))}
-            </View>
-            
-            <TouchableOpacity style={styles.button} onPress={startQuiz}>
-              <Text style={styles.buttonText}>Start Quiz</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        
         {gamePhase === 'quiz' && (
           <View style={styles.quizContainer}>
-            <Text style={styles.instruction}>
-              Question {currentQuestionIndex + 1} of {tasks.length}
-            </Text>
+            
             <Text style={styles.questionText}>
-              What was task #{currentQuestionIndex + 1}?
+              {currentQuestionIndex + 1} 번째 목록은?
             </Text>
             
-            {options.map((option, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.optionButton,
-                  selectedOption === index && styles.selectedOption,
-                ]}
-                onPress={() => handleOptionSelect(index)}>
-                <Text style={styles.optionText}>{option.fullText}</Text>
-              </TouchableOpacity>
-            ))}
+            {options.map((option, index) => {
+              const isSelected = selectedOption === index;
+              const showCorrect = isSelected && feedbackType === 'correct';
+              const showWrong = isSelected && feedbackType === 'wrong';
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.optionButton,
+                    isSelected && styles.selectedOption,
+                    showCorrect && styles.correctOption,
+                    showWrong && styles.wrongOption,
+                  ]}
+                  onPress={() => handleOptionSelect(index)}
+                  disabled={isProcessing}
+                >
+                  <Text style={styles.optionText}>{option.fullText}</Text>
+                </TouchableOpacity>
+              );
+            })}
             
-            <TouchableOpacity style={styles.button} onPress={submitAnswer}>
-              <Text style={styles.buttonText}>Submit Answer</Text>
-            </TouchableOpacity>
-            
-            <Text style={styles.scoreText}>
-              Score: {correctAnswers}/{currentQuestionIndex + 1}
-            </Text>
           </View>
         )}
         
-        {gamePhase !== 'setup' && (
-          <TouchableOpacity style={styles.resetButton} onPress={resetGame}>
-            <Text style={styles.buttonText}>Reset Game</Text>
-          </TouchableOpacity>
-        )}
       </ScrollView>
+      {isCongratsVisible && (
+        <View style={styles.congratsOverlay} pointerEvents="none">
+          <Text style={styles.congratsText}>심부름 완료!</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -309,15 +311,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontSize: 16,
+    fontSize: 32,
     flex: 1,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 10,
-    fontSize: 16,
+    fontSize: 32,
     backgroundColor: '#fff',
     width: 80,
   },
@@ -330,8 +332,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 40,
+    width: 200,
     fontWeight: '600',
+    textAlign: 'center',
   },
   tasksContainer: {
     backgroundColor: '#fff',
@@ -351,14 +355,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   taskNumber: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '600',
     marginRight: 8,
     color: '#666',
     minWidth: 25,
   },
   taskText: {
-    fontSize: 16,
+    fontSize: 19,
     flex: 1,
     lineHeight: 22,
     color: '#333',
@@ -377,7 +381,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   questionText: {
-    fontSize: 20,
+    fontSize:40,
     textAlign: 'center',
     marginBottom: 25,
     fontWeight: '600',
@@ -395,25 +399,37 @@ const styles = StyleSheet.create({
     borderColor: '#aaaaaa',
     backgroundColor: '#e3f2fd',
   },
+  correctOption: {
+    borderColor: '#2e7d32',
+    backgroundColor: '#e8f5e9',
+  },
+  wrongOption: {
+    borderColor: '#c62828',
+    backgroundColor: '#ffebee',
+  },
   optionText: {
-    fontSize: 16,
+    fontSize: 19,
     color: '#333',
     lineHeight: 22,
   },
-  scoreText: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginTop: 15,
-    fontWeight: '600',
-    color: '#4CAF50',
-  },
-  resetButton: {
-    backgroundColor: '#FF9800',
-    padding: 15,
-    borderRadius: 8,
+  congratsOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: 'center',
-    margin: 20,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)'
   },
+  congratsText: {
+    fontSize: 48,
+    marginTop:20,
+    color: '#2e7d32',
+    fontWeight: '800',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+  }
 });
 
 export default TaskSequenceScreen;
