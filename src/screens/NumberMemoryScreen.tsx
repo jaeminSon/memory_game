@@ -5,8 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
-  Alert,
+  ScrollView
 } from 'react-native';
 
 const NumberMemoryScreen = () => {
@@ -61,7 +60,7 @@ const NumberMemoryScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>생성할 숫자 개수: </Text>
         <TextInput
@@ -83,7 +82,7 @@ const NumberMemoryScreen = () => {
         <View style={styles.numberContainer}>
           <Text style={styles.generatedNumber}>{generatedNumber}</Text>
           <TouchableOpacity style={styles.button} onPress={startGame}>
-            <Text style={styles.buttonText}>입력</Text>
+            <Text style={styles.buttonText}>게임 시작!</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -107,7 +106,7 @@ const NumberMemoryScreen = () => {
         </Text>
       )}
 
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -146,7 +145,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 48,
+    fontSize: 36,
     fontWeight: '600',
   },
   numberContainer: {

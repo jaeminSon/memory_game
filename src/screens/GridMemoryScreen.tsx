@@ -242,7 +242,7 @@ const GridMemoryScreen = () => {
           
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={startGame}>
-              <Text style={styles.buttonText}>시작!</Text>
+              <Text style={styles.buttonText}>게임 시작!</Text>
             </TouchableOpacity>
           </View>
         </View>
