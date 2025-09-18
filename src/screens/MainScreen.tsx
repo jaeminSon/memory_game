@@ -33,7 +33,7 @@ const MainScreen = ({navigation}: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>기억력 게임</Text>
+      <Text style={styles.title}>기억력 강화 훈련</Text>
       <View style={styles.grid}>
         {games.map((game, index) => (
           <TouchableOpacity
