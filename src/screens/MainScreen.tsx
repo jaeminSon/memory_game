@@ -29,6 +29,16 @@ const MainScreen = ({navigation}: any) => {
       icon: '📝',
       screen: 'TaskSequence',
     },
+    {
+      title: '국기 맞추기',
+      icon: '🇰🇷',
+      screen: 'FlagQuiz',
+    },
+    {
+      title: '수도 맞추기',
+      icon: '🏛️',
+      screen: 'CapitalQuiz',
+    },
   ];
 
   return (
