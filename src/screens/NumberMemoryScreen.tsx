@@ -95,7 +95,7 @@ const NumberMemoryScreen = () => {
             value={userInput}
             onChangeText={handleInputChange}
             keyboardType="numeric"
-            placeholder="입력칸"
+            placeholder="입력"
           />
           
         </View>
