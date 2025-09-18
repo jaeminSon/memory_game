@@ -19,7 +19,7 @@ interface Cell {
 
 const GridMemoryScreen = () => {
   const [gridWidth, setGridWidth] = useState('5');
-  const [numCells, setNumCells] = useState('10');
+  const [numCells, setNumCells] = useState('5');
   const [speed, setSpeed] = useState(1000);
   const [grid, setGrid] = useState<Cell[]>([]);
   const [sequence, setSequence] = useState<number[]>([]);
@@ -44,7 +44,7 @@ const GridMemoryScreen = () => {
   const generateSequence = (): boolean => {
     const width = parseInt(gridWidth) || 5;
     const height = parseInt(gridWidth) || 5;
-    const k = parseInt(numCells) || 10;
+    const k = parseInt(numCells) || 5;
     const totalCells = width * height;
 
     if (width > 10) {
@@ -217,7 +217,7 @@ const GridMemoryScreen = () => {
               value={numCells}
               onChangeText={setNumCells}
               keyboardType="numeric"
-              placeholder="10"
+              placeholder="5"
             />
           </View>
             
@@ -264,7 +264,7 @@ const GridMemoryScreen = () => {
           {renderGrid()}
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={startGame}>
-              <Text style={styles.buttonText}>다시 플레이</Text>
+              <Text style={styles.buttonText}>다시 시작</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={resetToSetup}>
               <Text style={styles.buttonText}>세팅 화면</Text>
@@ -377,14 +377,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
     marginBottom: 20,
-  },
-  resetButton: {
-    backgroundColor: '#FF9800',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-  },
+  }
 });
 
 export default GridMemoryScreen;
