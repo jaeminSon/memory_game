@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 
@@ -52,6 +53,11 @@ const ShapeSequenceScreen = () => {
     const n = parseInt(numShapes) || 5;
     const newSequence: Shape[] = [];
     
+    if (n > 20) {
+      Alert.alert('설정 오류', `모양 개수는 20을 넘을수 없습니다.`);
+      return false;
+    }
+    
     for (let i = 0; i < n; i++) {
       const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
       const color = COLORS[Math.floor(Math.random() * COLORS.length)];
@@ -62,6 +68,7 @@ const ShapeSequenceScreen = () => {
     setCurrentShapeIndex(-1);
     setSelectedOption(null);
     generateOptions(newSequence);
+    return true;
   };
 
   const generateOptions = (correctSequence: Shape[]) => {
@@ -112,11 +119,13 @@ const ShapeSequenceScreen = () => {
   };
 
   const startGame = () => {
-    generateSequence();
-    setGamePhase('showing');
-    setCurrentShapeIndex(0);
-    setSelectedOption(null);
-    setAnswerSubmitted(false);
+    const legitimate = generateSequence();
+    if (legitimate === true){
+      setGamePhase('showing');
+      setCurrentShapeIndex(0);
+      setSelectedOption(null);
+      setAnswerSubmitted(false);
+    }
   };
 
   useEffect(() => {

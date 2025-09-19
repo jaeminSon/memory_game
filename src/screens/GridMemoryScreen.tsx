@@ -365,7 +365,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   highlightedCell: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#4CAF50',
   },
   correctCell: {
     backgroundColor: '#4CAF50',

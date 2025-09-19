@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Alert,
 } from 'react-native';
 
 interface Task {
@@ -106,6 +107,12 @@ const TaskSequenceScreen = () => {
 
   const generateTasks = () => {
     const n = parseInt(numTasks) || 5;
+
+    if (n > 20) {
+      Alert.alert('설정 오류', `목록 개수는 20을 넘을수 없습니다.`);
+      return false;
+    }
+
     const usedTasks = new Set<string>();
     const newTasks: Task[] = [];
     

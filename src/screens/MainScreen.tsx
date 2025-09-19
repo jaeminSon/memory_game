@@ -4,7 +4,7 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
+  ScrollView,
 } from 'react-native';
 
 const MainScreen = ({navigation}: any) => {
@@ -42,7 +42,7 @@ const MainScreen = ({navigation}: any) => {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>기억력 강화 훈련</Text>
       <View style={styles.grid}>
         {games.map((game, index) => (
@@ -55,7 +55,7 @@ const MainScreen = ({navigation}: any) => {
           </TouchableOpacity>
         ))}
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 

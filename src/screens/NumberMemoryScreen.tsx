@@ -5,7 +5,8 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 
 const NumberMemoryScreen = () => {
@@ -19,6 +20,12 @@ const NumberMemoryScreen = () => {
 
   const generateNumber = () => {
     const numDigits = parseInt(digits) || 10;
+    
+    if (numDigits > 100) {
+      Alert.alert('설정 오류', `숫자 개수는 100을 넘을수 없습니다.`);
+      return false;
+    }
+
     let number = '';
     for (let i = 0; i < numDigits; i++) {
       number += Math.floor(Math.random() * 10).toString();
