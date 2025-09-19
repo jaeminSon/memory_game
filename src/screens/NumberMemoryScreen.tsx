@@ -22,7 +22,12 @@ const NumberMemoryScreen = () => {
     const numDigits = parseInt(digits) || 10;
     
     if (numDigits > 100) {
-      Alert.alert('설정 오류', `숫자 개수는 100을 넘을수 없습니다.`);
+      Alert.alert('설정 오류', `숫자 개수는 100 을 넘을수 없습니다.`);
+      return false;
+    }
+
+    if (numDigits < 1) {
+      Alert.alert('설정 오류', `숫자 개수는 1 이상이어야 합니다.`);
       return false;
     }
 
@@ -126,7 +131,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   label: {
     fontSize: 32,
@@ -157,7 +162,7 @@ const styles = StyleSheet.create({
   },
   numberContainer: {
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 10,
   },
   generatedNumber: {
     fontSize: 36,
@@ -186,14 +191,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: '100%',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 0,
     letterSpacing: 1,
   },
   feedback: {
     fontSize: 76,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginVertical: 20,
   }
 });
 

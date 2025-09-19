@@ -109,7 +109,12 @@ const TaskSequenceScreen = () => {
     const n = parseInt(numTasks) || 5;
 
     if (n > 20) {
-      Alert.alert('설정 오류', `목록 개수는 20을 넘을수 없습니다.`);
+      Alert.alert('설정 오류', `목록 개수는 20 을 넘을수 없습니다.`);
+      return false;
+    }
+
+    if (n < 1) {
+      Alert.alert('설정 오류', `목록 개수는 1 이상이어야 합니다.`);
       return false;
     }
 
@@ -225,8 +230,7 @@ const TaskSequenceScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {gamePhase === 'setup' && (
           <View style={styles.setupContainer}>
             <View style={styles.inputRow}>
@@ -249,8 +253,7 @@ const TaskSequenceScreen = () => {
                 <View style={styles.tasksContainer}>
                   {tasks.map((task, index) => (
                     <View key={index} style={styles.taskItem}>
-                      <Text style={styles.taskNumber}>{index + 1}.</Text>
-                      <Text style={styles.taskText}>{task.fullText}</Text>
+                      <Text style={styles.taskText}>{index + 1}. {task.fullText}</Text>
                     </View>
                   ))}
                 </View>
@@ -294,14 +297,11 @@ const TaskSequenceScreen = () => {
           </View>
         )}
         
+        {isCongratsVisible &&
+            <Text style={styles.congratsText}>심부름 완료!</Text>
+        }
       </ScrollView>
-      {isCongratsVisible && (
-        <View style={styles.congratsOverlay} pointerEvents="none">
-          <Text style={styles.congratsText}>심부름 완료!</Text>
-        </View>
-      )}
-    </SafeAreaView>
-  );
+    );
 };
 
 const styles = StyleSheet.create({
@@ -361,15 +361,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     alignItems: 'flex-start',
   },
-  taskNumber: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginRight: 8,
-    color: '#666',
-    minWidth: 25,
-  },
   taskText: {
-    fontSize: 19,
+    fontWeight: '300',
+    fontSize: 20,
     flex: 1,
     lineHeight: 22,
     color: '#333',
@@ -416,18 +410,9 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 19,
+    fontWeight: '700',
     color: '#333',
     lineHeight: 22,
-  },
-  congratsOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.2)'
   },
   congratsText: {
     fontSize: 48,
@@ -435,7 +420,7 @@ const styles = StyleSheet.create({
     color: '#2e7d32',
     fontWeight: '800',
     textAlign: 'center',
-    paddingHorizontal: 20,
+    alignSelf: 'center',
   }
 });
 

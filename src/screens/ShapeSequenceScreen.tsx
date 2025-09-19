@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -8,43 +8,65 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import Slider from '@react-native-community/slider';
 
 interface Shape {
-  type: string;
-  color: string;
+  emoji: string;
 }
 
-const SHAPES = ['Circle', 'Square', 'Triangle', 'Star', 'Clover', 'Diamond', 'Spade', 'Heart'];
-const COLORS = ['Black', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Violet'];
-
-const SHAPE_SYMBOLS = {
-  Circle: '●',
-  Square: '■',
-  Triangle: '▲',
-  Star: '★',
-  Clover: '♣',
-  Diamond: '♦',
-  Spade: '♠',
-  Heart: '♥',
-};
-
-const COLOR_CODES = {
-  Red: '#FF0000',
-  Orange: '#FFA500',
-  Yellow: '#F5F500',
-  Green: '#008000',
-  Blue: '#0000FF',
-  Violet: '#8A2BE2',
-};
+const SHAPE_EMOJIS = [
+  '🔴',
+  '🟠', 
+  '🟡',
+  '🟢',
+  '🔵',
+  '🟣',
+  '⚫',
+  '⚪',
+  '🟤',
+  '🔺',
+  '🔻',
+  '🔶',
+  '🔷',
+  '🟥',
+  '🟧',
+  '🟨',
+  '🟩',
+  '🟦',
+  '🟪',
+  '⬛️',
+  '⬜️',
+  '🟫',
+  '♠️',
+  '♣️',
+  '♥️',
+  '♦️',
+  '🩷',
+  '🧡',
+  '💛',
+  '💚',
+  '💙',
+  '🩵',
+  '💜',
+  '🖤',
+  '🩶',
+  '🤍',
+  '🤎',
+  '⚽️',
+  '🏀',
+  '🏈',
+  '⚾️',
+  '🏐',
+  '🏉',
+  '🎱',
+];
 
 const ShapeSequenceScreen = () => {
   const [numShapes, setNumShapes] = useState('5');
   const [sequence, setSequence] = useState<Shape[]>([]);
-  const [speed, setSpeed] = useState(1000);
+  const [showSequence, setShowSequence] = useState(false);
   const [currentShapeIndex, setCurrentShapeIndex] = useState(-1);
-  const [gamePhase, setGamePhase] = useState<'setup' | 'showing' | 'quiz' | 'completed'>('setup');
-  const [options, setOptions] = useState<Shape[][]>([]);
+  const [gamePhase, setGamePhase] = useState<'setup' | 'quiz' | 'completed'>('setup');
+  const [options, setOptions] = useState<Shape[]>([]);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [correctOption, setCorrectOption] = useState<number>(0);
   const [answerSubmitted, setAnswerSubmitted] = useState(false);
@@ -54,94 +76,69 @@ const ShapeSequenceScreen = () => {
     const newSequence: Shape[] = [];
     
     if (n > 20) {
-      Alert.alert('설정 오류', `모양 개수는 20을 넘을수 없습니다.`);
+      Alert.alert('설정 오류', `모양 개수는 20 을 넘을수 없습니다.`);
       return false;
     }
     
-    for (let i = 0; i < n; i++) {
-      const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
-      const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-      newSequence.push({type: shape, color});
+    if (n < 1) {
+      Alert.alert('설정 오류', `모양 개수는 1 이상이어야 합니다.`);
+      return false;
     }
-    
+
+    for (let i = 0; i < n; i++) {
+      const emoji = SHAPE_EMOJIS[Math.floor(Math.random() * SHAPE_EMOJIS.length)];
+      newSequence.push({emoji});
+    }
+    setShowSequence(true);
     setSequence(newSequence);
-    setCurrentShapeIndex(-1);
     setSelectedOption(null);
-    generateOptions(newSequence);
     return true;
   };
 
-  const generateOptions = (correctSequence: Shape[]) => {
+  const generateOptions = (correctSequence: Shape[], targetIndex: number) => {
+    const correctShape = correctSequence[targetIndex];
     const correctIndex = Math.floor(Math.random() * 4);
     setCorrectOption(correctIndex);
 
-    const sequenceKey = (seq: Shape[]) =>
-      seq.map(s => `${s.type}|${s.color}`).join(',');
-
-    const deepCopy = (seq: Shape[]) => seq.map(s => ({...s}));
-
-    const makeVariantAt = (base: Shape[], position: number, typeOffset: number, colorOffset: number): Shape[] => {
-      if (base.length === 0) return [];
-      const idx = ((position % base.length) + base.length) % base.length;
-      const target = base[idx];
-      const typeIndex = SHAPES.indexOf(target.type);
-      const colorIndex = COLORS.indexOf(target.color);
-      const nextType = SHAPES[(typeIndex + typeOffset + SHAPES.length) % SHAPES.length];
-      const nextColor = COLORS[(colorIndex + colorOffset + COLORS.length) % COLORS.length];
-      const modified: Shape = {type: nextType, color: nextColor};
-      return base.map((s, j) => (j === idx ? modified : s));
-    };
-
-    const usedKeys = new Set<string>();
-    usedKeys.add(sequenceKey(correctSequence));
-
-    const newOptions: Shape[][] = new Array(4);
-    newOptions[correctIndex] = deepCopy(correctSequence);
-
-    // Create three unique variants deterministically with adjustments if needed
-    let filled = 0;
-    for (let slot = 0; slot < 4; slot++) {
-      if (slot === correctIndex) continue;
-      let attempt: Shape[] = makeVariantAt(correctSequence, filled, filled + 1, filled + 2);
-      let key = sequenceKey(attempt);
-      let guard = 0;
-      while (usedKeys.has(key) && guard < 50) {
-        guard++;
-        attempt = makeVariantAt(correctSequence, filled + guard, filled + 1 + guard, filled + 2 + guard);
-        key = sequenceKey(attempt);
-      }
-      usedKeys.add(key);
-      newOptions[slot] = attempt;
-      filled++;
+    // Get all available emojis except the correct one
+    const availableEmojis = SHAPE_EMOJIS.filter(emojiString => emojiString !== correctShape.emoji);
+    
+    // Ensure we have at least 3 different options
+    if (availableEmojis.length < 3) {
+      console.warn('Not enough emoji options for quiz');
+      return;
+    }
+    
+    // Shuffle available emojis
+    for (let i = availableEmojis.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = availableEmojis[i];
+      availableEmojis[i] = availableEmojis[j];
+      availableEmojis[j] = tmp;
     }
 
-    setOptions(newOptions);
+    // Take the first 3 for wrong options
+    const wrongShapes: Shape[] = availableEmojis.slice(0, 3).map(emojiString => ({emoji: emojiString}));
+
+    // Place options with the correct one in a random slot
+    const optionShapes: Shape[] = new Array(4);
+    optionShapes[correctIndex] = { ...correctShape };
+    let w = 0;
+    for (let slot = 0; slot < 4; slot++) {
+      if (slot === correctIndex) continue;
+      optionShapes[slot] = wrongShapes[w++];
+    }
+    setOptions(optionShapes);
   };
 
   const startGame = () => {
-    const legitimate = generateSequence();
-    if (legitimate === true){
-      setGamePhase('showing');
-      setCurrentShapeIndex(0);
-      setSelectedOption(null);
-      setAnswerSubmitted(false);
-    }
+    setGamePhase('quiz');
+    setShowSequence(false);
+    setCurrentShapeIndex(0);
+    setSelectedOption(null);
+    setAnswerSubmitted(false);
+    generateOptions(sequence, 0);
   };
-
-  useEffect(() => {
-    if (gamePhase === 'showing' && currentShapeIndex >= 0) {
-      if (currentShapeIndex < sequence.length) {
-        const timer = setTimeout(() => {
-          setCurrentShapeIndex(prev => prev + 1);
-        }, speed);
-        
-        return () => clearTimeout(timer);
-      } else {
-        setGamePhase('quiz');
-        setCurrentShapeIndex(-1);
-      }
-    }
-  }, [gamePhase, currentShapeIndex, sequence, speed]);
 
   const handleOptionSelect = (optionIndex: number) => {
     if (answerSubmitted) return;
@@ -151,9 +148,18 @@ const ShapeSequenceScreen = () => {
     setAnswerSubmitted(true);
 
     if (isCorrect) {
-      // Show green selection briefly, update text to success, then go to completed
+      // On correct: advance to next index or finish
       setTimeout(() => {
-        setGamePhase('completed');
+        const isLast = currentShapeIndex >= sequence.length - 1;
+        if (isLast) {
+          setGamePhase('completed');
+        } else {
+          const nextIndex = currentShapeIndex + 1;
+          setSelectedOption(null);
+          setAnswerSubmitted(false);
+          generateOptions(sequence, nextIndex);
+          setCurrentShapeIndex(nextIndex);
+        }
       }, 800);
     } else {
       // Flash red briefly, then allow user to try again (stay in quiz)
@@ -180,23 +186,10 @@ const ShapeSequenceScreen = () => {
           styles.shapeText,
           {
             fontSize: size,
-            color: COLOR_CODES[shape.color as keyof typeof COLOR_CODES],
           },
         ]}>
-        {SHAPE_SYMBOLS[shape.type as keyof typeof SHAPE_SYMBOLS]}
+        {shape.emoji}
       </Text>
-    );
-  };
-
-  const renderSequence = (shapes: Shape[]) => {
-    return (
-      <View style={[styles.sequenceContainer, styles.optionSequence]}>
-        {shapes.map((shape, index) => (
-          <View key={index} style={styles.shapeContainer}>
-            {renderShape(shape, 32)}
-          </View>
-        ))}
-      </View>
     );
   };
 
@@ -214,61 +207,39 @@ const ShapeSequenceScreen = () => {
               placeholder="5"
             />
           </View>
-          
-          <View style={styles.inputRow}>
-          <Text style={styles.label}>시연 속도</Text>
-          </View>
-          
-          <View style={styles.sliderContainer}>
-            <View style={styles.sliderRow}>
-              <Text style={styles.sliderLabel}>빠름</Text>
-              <Slider
-                style={styles.slider}
-                minimumValue={100}
-                maximumValue={2000}
-                value={speed}
-                onValueChange={setSpeed}
-                step={100}
-              />
-              <Text style={styles.sliderLabel}>느림</Text>
-            </View>
-          </View>
-          
-          <TouchableOpacity style={styles.button} onPress={startGame}>
-            <Text style={styles.buttonText}>게임 시작!</Text>
+
+          <View style={styles.numberContainer}>
+          <TouchableOpacity style={styles.button} onPress={generateSequence}>
+            <Text style={styles.buttonText}>생성</Text>
           </TouchableOpacity>
+          </View>
+          
+          {showSequence && <View style={styles.optionSequence}>
+            {sequence.map((shape, index) => (
+              <View key={index} style={styles.shapeContainer}>
+                {renderShape(shape, 32)}
+              </View>
+            ))}
+          </View>}
+
+          {showSequence && <TouchableOpacity style={[styles.button, {marginTop: 40}]} onPress={startGame}>
+            <Text style={styles.buttonText}>게임 시작!</Text>
+          </TouchableOpacity>}
     
         </View>
       )}
-      
-      {gamePhase === 'showing' && (
-        <View style={styles.showingContainer}>
-          {currentShapeIndex < sequence.length && 
-          (<Text style={styles.instruction}>
-            {currentShapeIndex + 1} / {sequence.length}
-          </Text>)}
-          
-          {currentShapeIndex < sequence.length && (
-            <View style={styles.currentShapeContainer}>
-              {renderShape(sequence[currentShapeIndex], 80)}
-            </View>
-          )}
-        </View>
-      )}
-      
+
       {((gamePhase === 'quiz') || (gamePhase === 'completed') ) && (
         <View style={styles.quizContainer}>
-          {gamePhase === 'quiz' && 
-          <Text style={styles.instruction}>정답을 골라주세요!</Text>}
-          
+          {gamePhase === 'quiz' && (
+            <Text style={styles.instruction}>{currentShapeIndex + 1} 번째 모양은?</Text>)}
           {gamePhase === 'completed' &&
-          <Text style={styles.textcorrect}>정답입니다!</Text>
-          }
+          <Text style={styles.textcorrect}>훌륭합니다!</Text>}
 
           {options.map((option, index) => {
             let optionBackgroundColor = '#fff';
             if (answerSubmitted && selectedOption === index) {
-              optionBackgroundColor = selectedOption === correctOption ? '#4CAF50' : '#F44336';
+              optionBackgroundColor = selectedOption === correctOption ? '#b9dfbb' : '#ef9a9a';
             }
             
             return (
@@ -280,7 +251,11 @@ const ShapeSequenceScreen = () => {
                 ]}
                 onPress={() => handleOptionSelect(index)}
                 disabled={answerSubmitted}>
-                {renderSequence(option)}
+                <View style={styles.optionContainer}>
+                  <View style={styles.shapeContainer}>
+                    {renderShape(option, 48)}
+                  </View>
+                </View>
               </TouchableOpacity>
             );
           })}
@@ -289,11 +264,8 @@ const ShapeSequenceScreen = () => {
       
       {gamePhase === 'completed' && (
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={startGame}>
-            <Text style={styles.buttonText}>다시 시작</Text>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={resetToSetup}>
-            <Text style={styles.buttonText}>세팅 화면</Text>
+            <Text style={styles.buttonText}>다시 시작</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -309,6 +281,10 @@ const styles = StyleSheet.create({
   },
   setupContainer: {
     flex: 1,
+  },
+  numberContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
   },
   inputRow: {
     flexDirection: 'row',
@@ -327,24 +303,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
     backgroundColor: '#fff',
     width: 80,
-  },
-  sliderContainer: {
-    marginBottom: 80,
-    alignItems: 'center',
-  },
-  sliderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-  },
-  slider: {
-    flex: 1,
-    height: 40,
-    marginHorizontal: 10,
-  },
-  sliderLabel: {
-    fontSize: 18,
-    color: '#666',
   },
   button: {
     backgroundColor: '#aaaaaa',
@@ -371,9 +329,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 10,
   },
-  showingContainer: {
-    flex: 1,
-  },
   instruction: {
     fontSize: 32,
     color: '#666666',
@@ -399,7 +354,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     alignSelf: 'center',
   },
-  sequenceContainer: {
+  optionContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
@@ -409,7 +364,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 8,
-    marginTop: 5,
+    marginTop: 20,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   shapeContainer: {
     margin: 2,

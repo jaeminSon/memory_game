@@ -48,12 +48,22 @@ const GridMemoryScreen = () => {
     const totalCells = width * height;
 
     if (width > 10) {
-      Alert.alert('설정 오류', `한변의 길이는 10을 넘을수 없습니다.`);
+      Alert.alert('설정 오류', `한변의 길이는 10 을 넘을수 없습니다.`);
       return false;
     }
 
+    if (width < 1) {
+      Alert.alert('설정 오류', `한변의 길이는 1 이상이어야 합니다.`);
+      return false;
+    }
+
+    if (k < 1) {
+      Alert.alert('설정 오류', `터치 횟수는 1 이상이어야 합니다.`);
+      return false;
+    }
+    
     if (k > totalCells) {
-      Alert.alert('설정 오류', `총 셀 수(${totalCells})보다 많은 개수(${k})를 선택할 수 없습니다.`);
+      Alert.alert('설정 오류', `전체 셀 (${totalCells} 개) 보다 많은 터치 횟수 (${k} 개) 를 설정할 수 없습니다.`);
       return false;
     }
 
@@ -211,7 +221,7 @@ const GridMemoryScreen = () => {
           </View>
           
           <View style={styles.inputRow}>
-            <Text style={styles.label}>총 터치 횟수:</Text>
+            <Text style={styles.label}>터치 횟수:</Text>
             <TextInput
               style={styles.input}
               value={numCells}

@@ -161,8 +161,8 @@ const CapitalQuizScreen = () => {
           const isSelectedCorrect = feedback === 'correct' && isSelected && opt.nameEn === current.nameEn;
           const isSelectedWrong = feedback === 'wrong' && isSelected && opt.nameEn !== current.nameEn;
           let bg = '#fff';
-          if (isSelectedCorrect) bg = '#e8f5e9';
-          if (isSelectedWrong) bg = '#ffebee';
+          if (isSelectedCorrect) bg = '#b9dfbb';
+          if (isSelectedWrong) bg = '#ef9a9a';
           return (
             <TouchableOpacity
               key={`${opt.nameEn}-${idx}`}
@@ -216,6 +216,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 24,
+    fontWeight: '700',
     color: '#333',
     textAlign: 'center',
   },

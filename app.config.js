@@ -1,6 +1,6 @@
 export default {
   expo: {
-    name: "MemoryUpUpUp",
+    name: "암기력 UP",
     slug: "memoryupupup",
     version: "1.0.0",
     orientation: "portrait",
