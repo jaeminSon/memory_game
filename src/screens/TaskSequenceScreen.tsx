@@ -245,7 +245,7 @@ const TaskSequenceScreen = () => {
             </View>
             
             <TouchableOpacity style={styles.button} onPress={generateTasks}>
-              <Text style={styles.buttonText}>목록 생성!</Text>
+              <Text style={styles.buttonText}>생성하기</Text>
             </TouchableOpacity>
             
             {tasks.length > 0 && (
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   taskText: {
-    fontWeight: '300',
+    fontWeight: '600',
     fontSize: 20,
     flex: 1,
     lineHeight: 22,

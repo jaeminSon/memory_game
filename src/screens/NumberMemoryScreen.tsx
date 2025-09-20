@@ -74,7 +74,7 @@ const NumberMemoryScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>생성할 숫자 개수: </Text>
+        <Text style={styles.label}>숫자 개수: </Text>
         <TextInput
           style={styles.input}
           value={digits}
@@ -86,7 +86,7 @@ const NumberMemoryScreen = () => {
 
       <View style={styles.numberContainer}>
       <TouchableOpacity style={styles.button} onPress={generateNumber}>
-        <Text style={styles.buttonText}>생성</Text>
+        <Text style={styles.buttonText}>생성하기</Text>
       </TouchableOpacity>
       </View>
 

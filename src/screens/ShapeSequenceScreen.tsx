@@ -65,11 +65,13 @@ const ShapeSequenceScreen = () => {
   const [sequence, setSequence] = useState<Shape[]>([]);
   const [showSequence, setShowSequence] = useState(false);
   const [currentShapeIndex, setCurrentShapeIndex] = useState(-1);
-  const [gamePhase, setGamePhase] = useState<'setup' | 'quiz' | 'completed'>('setup');
+  const [gamePhase, setGamePhase] = useState<'setup' | 'quiz' >('setup');
   const [options, setOptions] = useState<Shape[]>([]);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [correctOption, setCorrectOption] = useState<number>(0);
   const [answerSubmitted, setAnswerSubmitted] = useState(false);
+  const [isCongratsVisible, setIsCongratsVisible] = useState(false);
+
 
   const generateSequence = () => {
     const n = parseInt(numShapes) || 5;
@@ -150,9 +152,8 @@ const ShapeSequenceScreen = () => {
     if (isCorrect) {
       // On correct: advance to next index or finish
       setTimeout(() => {
-        const isLast = currentShapeIndex >= sequence.length - 1;
-        if (isLast) {
-          setGamePhase('completed');
+        if (currentShapeIndex >= sequence.length - 1) {
+          showCongratsThenReset();
         } else {
           const nextIndex = currentShapeIndex + 1;
           setSelectedOption(null);
@@ -168,6 +169,14 @@ const ShapeSequenceScreen = () => {
         setAnswerSubmitted(false);
       }, 800);
     }
+  };
+
+  const showCongratsThenReset = () => {
+    setIsCongratsVisible(true);
+    setTimeout(() => {
+      setIsCongratsVisible(false);
+      resetToSetup();
+    }, 1000);
   };
 
   const resetToSetup = () => {
@@ -210,7 +219,7 @@ const ShapeSequenceScreen = () => {
 
           <View style={styles.numberContainer}>
           <TouchableOpacity style={styles.button} onPress={generateSequence}>
-            <Text style={styles.buttonText}>생성</Text>
+            <Text style={styles.buttonText}>생성하기</Text>
           </TouchableOpacity>
           </View>
           
@@ -229,13 +238,10 @@ const ShapeSequenceScreen = () => {
         </View>
       )}
 
-      {((gamePhase === 'quiz') || (gamePhase === 'completed') ) && (
+      {(gamePhase === 'quiz') && (
         <View style={styles.quizContainer}>
           {gamePhase === 'quiz' && (
             <Text style={styles.instruction}>{currentShapeIndex + 1} 번째 모양은?</Text>)}
-          {gamePhase === 'completed' &&
-          <Text style={styles.textcorrect}>훌륭합니다!</Text>}
-
           {options.map((option, index) => {
             let optionBackgroundColor = '#fff';
             if (answerSubmitted && selectedOption === index) {
@@ -262,13 +268,9 @@ const ShapeSequenceScreen = () => {
         </View>
       )}
       
-      {gamePhase === 'completed' && (
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={resetToSetup}>
-            <Text style={styles.buttonText}>다시 시작</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {isCongratsVisible &&
+            <Text style={styles.congratsText}>훌륭해요!</Text>
+        }
     </ScrollView>
   );
 };
@@ -400,6 +402,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
     marginBottom: 20,
+  },
+  congratsText: {
+    fontSize: 48,
+    marginTop:20,
+    color: '#2e7d32',
+    fontWeight: '800',
+    textAlign: 'center',
+    alignSelf: 'center',
   }
 });
 
